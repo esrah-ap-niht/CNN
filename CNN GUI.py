@@ -89,23 +89,15 @@ annotation_path = filedialog.askdirectory()
 filelist = []
 for ext in ('*.gif', '*.png', '*.jpg'):
    filelist.extend(glob(join(image_path, ext)))
-   
-   
-   
-# Specify color annotation settings and annotation labels 
-annotation_types = [
-    "A",
-    "B"
-    ]
-
-
-
+ 
 annotation_colormap = px.colors.qualitative.Light24
 
 # Specify possible brush sizes, contrast and annotation opacity ranges. 
 brush_sizes = list(range(1,30)) # brush sizes of 1 to 30 pixels 
 contrasts = list(range(0,100)) # contrast enhancement of 0 to 100 percent 
 opacity_range = list(range(0,101)) # opacity of annotations in percent 
+
+annotation_types = ["A", "B"]
 
 # Specify annotation options for overwriting pixels 
 overwrite_options = ["Only Blank Pixels",
@@ -118,7 +110,6 @@ DEFAULT_OVERWRITE = overwrite_options[0]
 DEFAULT_BSIZE = 5
 DEFAULT_CONTRAST = 0
 DEFAULT_OPACITY = 100
-
 
 # Specify layout settings 
 canvas_width = 900
@@ -140,18 +131,38 @@ app.layout = html.Div(
                             id="project_title_input",
                             type='text',
                             placeholder="Your Project Title Here..",
-                            style = {'backgroundColor': 'green', 'text-align':'center'},
+                            style = {'backgroundColor': 'green', 
+                                     'text-align':'center',
+                                     'margin-bottom': '5px',
+                                     'margin-top': '5px'
+                                     },
                             ), 
                             
                         dbc.Button(
-                            "Create New Project", id="create-new-project-button", outline=False, color = 'success'
+                            "Create New Project", 
+                            id="create-new-project-button", 
+                            outline=False, 
+                            color = 'success',
+                            style = {
+                                     'margin-bottom': '5px'
+                                     },
                             ),
                         
                         dbc.Button(
-                            "Load Previous Project", id="load-previous-project-button", outline=False, color = 'success'
+                            "Load Previous Project", 
+                            id="load-previous-project-button", 
+                            outline=False, 
+                            color = 'success',
+                            style = {
+                                     'margin-bottom': '5px'
+                                     },
                             ),
                         
-                        dcc.Markdown(children='Select Task', style={'backgroundColor': 'green', 'font-size': '20px', 'text-align':'center'}),
+                        dcc.Markdown(children='Select Task', 
+                                     style={'backgroundColor': 'green', 
+                                            'text-align':'center',
+                                            'margin-bottom': '5px'},
+                                     ),
                         
                         dcc.RadioItems(
                             [
@@ -161,37 +172,58 @@ app.layout = html.Div(
                             "Instance Segmentation"
                             ],
                             inline=False,
-                            style={'backgroundColor': 'green', 'margin-bottom': '50px', 'text-align':'center'}
+                            style={'backgroundColor': 'green', 
+                                   'margin-bottom': '50px', 
+                                   'text-align':'center'},
                             ),
                         
                         dbc.Button(
-                            "Import Labels from CSV or TXT File", id="import-labels-button", outline=False, color = 'primary'
+                            "Import Labels from CSV or TXT File", 
+                            id="import-labels-button", 
+                            outline=False, 
+                            color = 'primary',
+                            style={'margin-bottom': '5px'},
                             ),
                         
                         dcc.Input(
                             id="new-label-input",
                             type='text',
                             placeholder="New Label Here..",
-                            style = {'backgroundColor': 'lightblue', 'text-align':'center'},
+                            style = {'backgroundColor': 'lightblue', 
+                                     'text-align':'center',
+                                     'margin-bottom': '5px'},
                             ), 
                                         
                         dbc.Button(
-                            "Add New Label", id="add-new-labels-button", outline=False, color = 'primary'
+                            "Add New Label", 
+                            id="add-new-labels-button", 
+                            outline=False, 
+                            color = 'primary',
+                            style={'margin-bottom': '5px'},
                             ),
                         
                         dcc.Checklist(
                             [],
+                            id = 'labels_checklist',
                             inline = False,
-                            style = {'backgroundColor': 'lightblue', 'text-align':'center'},
+                            style = {'backgroundColor': 'lightblue', 
+                                     'text-align':'center',
+                                     'margin-bottom': '5px'},
                             ),
                         
                         dbc.Button(
-                            'Remove Selected Label(s)', id = "remove-labels-button", outline = False, color = "primary",
+                            'Remove Selected Label(s)', 
+                            id = "remove-labels-button", 
+                            outline = False, 
+                            color = "primary",
                             style={'margin-bottom': '50px'}
                             ),
                         
                         dbc.Button(
-                            'Save/Update Project', id = "save-project-button", outline = False, color = "danger",
+                            'Save/Update Project', 
+                            id = "save-project-button", 
+                            outline = False, 
+                            color = "danger",
                             style={'margin-bottom': '50px'}
                             ),
                         ])
@@ -322,6 +354,42 @@ app.layout = html.Div(
     
     ]
 )
+
+
+@callback(
+    Output('labels_checklist', 'options'),
+    Input('add-new-labels-button', 'n_clicks'),
+    Input('remove-labels-button', 'n_clicks'),
+    State('new-label-input', 'value'),
+    State('labels_checklist', 'value'),
+    State('labels_checklist', 'options'),
+    prevent_initial_call=True
+    )
+def change_labels( n_clicks_add, n_clicks_remove, new_label, labels_to_remove_list, labels_list):
+    # Note: Plotly does not allow the same output to be affected by multiple callbacks. 
+    # One work around is to have multiple inputs trigger the same callback, and then 
+    # execute different pieces of code depending on which input triggered the callback. 
+    # https://dash.plotly.com/duplicate-callback-outputs
+    triggered_id = ctx.triggered_id
+
+    if triggered_id == 'add-new-labels-button':
+        
+        try:
+            labels_list.append(new_label)    
+        except:
+            labels_list = [new_label]
+
+    elif triggered_id == 'remove-labels-button':
+            
+        for label in labels_to_remove_list:
+            try:
+                labels_list.remove(label)
+            except:
+                pass 
+            
+    return labels_list
+
+
 
 
 @callback(
