@@ -26,6 +26,7 @@ from skimage import draw, morphology
 from scipy import ndimage
 from PIL import ImageColor
 import cv2
+import h5py
 
 ##############################################################################################################
 #### Garbage collection and tkinter settings 
@@ -124,9 +125,19 @@ app.layout = html.Div(
         # Setup the three main tabs in the interface - setup, data labeling, and training. 
         dcc.Tabs([
             #### Setup tab - beginning 
-            dcc.Tab(label='Setup / Select Project', children = [
+            dcc.Tab(label='Setup Project', children = [
                 dbc.Row(
                     [
+                        dbc.Button(
+                            "Load Previous Project", 
+                            id="load-previous-project-button", 
+                            outline=False, 
+                            color = 'success',
+                            style = {
+                                     'margin-bottom': '5px'
+                                     },
+                            ),
+                        
                         dcc.Input(
                             id="project_title_input",
                             type='text',
@@ -138,26 +149,6 @@ app.layout = html.Div(
                                      },
                             ), 
                             
-                        dbc.Button(
-                            "Create New Project", 
-                            id="create-new-project-button", 
-                            outline=False, 
-                            color = 'success',
-                            style = {
-                                     'margin-bottom': '5px'
-                                     },
-                            ),
-                        
-                        dbc.Button(
-                            "Load Previous Project", 
-                            id="load-previous-project-button", 
-                            outline=False, 
-                            color = 'success',
-                            style = {
-                                     'margin-bottom': '5px'
-                                     },
-                            ),
-                        
                         dcc.Markdown(children='Select Task', 
                                      style={'backgroundColor': 'green', 
                                             'text-align':'center',
@@ -171,6 +162,7 @@ app.layout = html.Div(
                             "Semantic Segmentation",
                             "Instance Segmentation"
                             ],
+                            id = 'task_selection',
                             inline=False,
                             style={'backgroundColor': 'green', 
                                    'margin-bottom': '50px', 
@@ -216,11 +208,19 @@ app.layout = html.Div(
                             id = "remove-labels-button", 
                             outline = False, 
                             color = "primary",
+                            style={'margin-bottom': '5px'}
+                            ),
+                        
+                        dbc.Button(
+                            'Rename Selected Label', 
+                            id = "rename-labels-button", 
+                            outline = False, 
+                            color = "primary",
                             style={'margin-bottom': '50px'}
                             ),
                         
                         dbc.Button(
-                            'Save/Update Project', 
+                            'Save Project', 
                             id = "save-project-button", 
                             outline = False, 
                             color = "danger",
@@ -336,8 +336,14 @@ app.layout = html.Div(
             #### Labeling tab - end 
             
             #### Training tab - beginning  
-            dcc.Tab(label='Train CNN', children=[])
+            dcc.Tab(label='Train CNN', children=[]),
             #### Training tab - end 
+            
+            #### Metrics tab - beginning 
+            dcc.Tab(label='Evaluate Metrics', children=[])
+            #### Metrics tab - end 
+                    
+                    
             ]),
         
             
@@ -360,12 +366,13 @@ app.layout = html.Div(
     Output('labels_checklist', 'options'),
     Input('add-new-labels-button', 'n_clicks'),
     Input('remove-labels-button', 'n_clicks'),
+    Input('rename-labels-button', 'n_clicks'),
     State('new-label-input', 'value'),
     State('labels_checklist', 'value'),
     State('labels_checklist', 'options'),
     prevent_initial_call=True
     )
-def change_labels( n_clicks_add, n_clicks_remove, new_label, labels_to_remove_list, labels_list):
+def change_labels( n_clicks_add, n_clicks_remove, n_clicks_rename, new_label, labels_to_remove_list, labels_list):
     # Note: Plotly does not allow the same output to be affected by multiple callbacks. 
     # One work around is to have multiple inputs trigger the same callback, and then 
     # execute different pieces of code depending on which input triggered the callback. 
@@ -375,7 +382,10 @@ def change_labels( n_clicks_add, n_clicks_remove, new_label, labels_to_remove_li
     if triggered_id == 'add-new-labels-button':
         
         try:
-            labels_list.append(new_label)    
+            if new_label in labels_list:
+                pass 
+            else:
+                labels_list.append(new_label)    
         except:
             labels_list = [new_label]
 
@@ -387,10 +397,51 @@ def change_labels( n_clicks_add, n_clicks_remove, new_label, labels_to_remove_li
             except:
                 pass 
             
+    elif triggered_id == 'rename-labels-button':
+            
+        # Ensure only one label is being renamed
+        if len(labels_to_remove_list) != 1:
+            pass 
+        # Ensure that the replacement label is not already being used 
+        elif new_label in labels_list:
+            pass 
+        else:
+            for label in labels_to_remove_list:
+                try:
+                    labels_list[labels_list.index(label)] = new_label
+                except:
+                    pass 
+            
     return labels_list
 
 
+@callback(
+    Input('save-project-button', 'n_clicks'), 
+    State('project_title_input', 'value'),
+    State('task_selection', 'value'),
+    State('labels_checklist', 'options'),
+    )
+def create_update_project( n_clicks, title, task, labels ):
+    
+    labels = list(labels)
+    string_dt = h5py.special_dtype(vlen=str)
+    
+    # Force the creation of the project file 
+    f = h5py.File('project_data.hdf5','a')
 
+    # Record metadata about the project     
+    f.attrs['Title'] = str(title)
+    f.attrs['Task'] = str(task)
+    # Limit the number of unique labels to 256 for 8 bit encoding of annotated pixels. 
+    # This could be changed to 16 bit but would double memory for annotated images. 
+    dset = f.require_dataset("Labels", 
+                             shape = (256,2), 
+                             dtype = string_dt )
+    
+    dset[0:len(labels), 0] = labels
+    dset[:, 1] = np.array( np.arange(0, 256), dtype = str)
+    
+    
 
 @callback(
     Output('canvas', 'image_content'), 
