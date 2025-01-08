@@ -3,20 +3,20 @@
 #### Import Packages 
 ##############################################################################################################
 
-from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis
-from sklearn.ensemble import AdaBoostClassifier, RandomForestClassifier
-from sklearn.gaussian_process import GaussianProcessClassifier
-from sklearn.gaussian_process.kernels import RBF
-from sklearn.model_selection import train_test_split
-from sklearn.naive_bayes import GaussianNB
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn.neural_network import MLPClassifier
-from sklearn.pipeline import make_pipeline
-from sklearn.preprocessing import StandardScaler
-from sklearn.svm import SVC
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.model_selection import GridSearchCV
-import seaborn as sns 
+#from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis
+#from sklearn.ensemble import AdaBoostClassifier, RandomForestClassifier
+#from sklearn.gaussian_process import GaussianProcessClassifier
+#from sklearn.gaussian_process.kernels import RBF
+#from sklearn.model_selection import train_test_split
+#from sklearn.naive_bayes import GaussianNB
+#from sklearn.neighbors import KNeighborsClassifier
+#from sklearn.neural_network import MLPClassifier
+#from sklearn.pipeline import make_pipeline
+#from sklearn.preprocessing import StandardScaler
+#from sklearn.svm import SVC
+#from sklearn.tree import DecisionTreeClassifier
+#from sklearn.model_selection import GridSearchCV
+#import seaborn as sns 
 import h5py
 from torchvision.transforms import v2
 import pathlib
@@ -27,61 +27,61 @@ from tkinter import *
 import torch 
 import torch.optim as optim
 import torch.nn as nn
-import torch.nn.functional as F
+#import torch.nn.functional as F
 from torchvision import transforms
 from tqdm import tqdm
 #from utils import *
 #from model import UNET
-import torch 
-import torch.nn as nn
-import torchvision.transforms.functional as TF 
+#import torch 
+#import torch.nn as nn
+#import torchvision.transforms.functional as TF 
 #from torcheval.metrics.functional.aggregation.auc import auc
 from sklearn.metrics import roc_auc_score
 import time 
 
 
 #from torchvision.transforms import v2
-from sklearn.utils.class_weight import compute_class_weight
+#from sklearn.utils.class_weight import compute_class_weight
 
 import gc 
 import cv2
-import random 
+#import random 
 import os
 from PIL import Image 
-import torch
+#import torch
 from torch.utils.data import Dataset
 #from torchvision import transforms, datasets
 import numpy as np
-from sklearn.linear_model import LinearRegression, LogisticRegression
+#from sklearn.linear_model import LinearRegression, LogisticRegression
 from sklearn.model_selection import train_test_split
-from scipy.special import expit
-import pickle 
+#from scipy.special import expit
+#import pickle 
 from datetime import datetime
 import GPUtil
 import torch.optim.lr_scheduler as lr_scheduler
 import pandas as pd 
-import torch
+#import torch
 #from model import UNET
 #from utils import *
-from tqdm import tqdm
+#from tqdm import tqdm
 import matplotlib.pyplot as plt
-from torchvision import transforms
-from cityscapesscripts.helpers.labels import trainId2label as t2l
-from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay, accuracy_score, balanced_accuracy_score
-import statistics as stats
-from scipy.stats import mode 
-import scipy
-from skimage.morphology import skeletonize
+#from torchvision import transforms
+#from cityscapesscripts.helpers.labels import trainId2label as t2l
+#from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay, accuracy_score, balanced_accuracy_score
+#import statistics as stats
+#from scipy.stats import mode 
+#import scipy
+#from skimage.morphology import skeletonize
 
-import torch
-from torch.utils.data import DataLoader
-from torchvision import datasets, utils, transforms
+#import torch
+#from torch.utils.data import DataLoader
+#from torchvision import datasets, utils, transforms
 #from datasets import CityscapesDataset
-from PIL import Image
-from tqdm import tqdm
-import numpy as np
+#from PIL import Image
+#from tqdm import tqdm
+#import numpy as np
 
-from models import *
+#from models import *
 
 ##############################################################################################################
 #### Configuration 
@@ -98,8 +98,30 @@ except:
     pass 
 
 
+
+    
+ 
+    
+        
+        
+        
+        
+ 
+"""
+# number_channels must be explicitly set
+#if (hasattr(self, 'number_channels') == False) or (isinstance(number_channels, int) == False):
+#    raise Exception("Error: number_channels must be explicitly set to an integer")
+    
+if img_path.endswith(('.png', '.jpg', '.tif', '.tiff')):
+    img = np.array( cv2.imread( os.path.join(directory, img_path)), dtype = np.uint8 )
+elif img_path.endswith('.npy'):
+    img = np.load(os.path.join(directory, img_path))
+"""
+        
+        
+
 class CNN(): 
-    def __init__(self, model_name, task, root_directory = None, num_training_epochs = 250, batch_size = 1, number_channels = None, learning_rate = 0.000_1, weight_decay = 0.0):
+    def __init__(self, model_name = None, task = None, root_directory = None, num_training_epochs = 250, batch_size = 3, number_channels = None, learning_rate = 0.000_1, weight_decay = 0.0):
         """
         This class provides an interface for training convolutional neural network 
         deep learners for semantic segmentation or image classification. 
@@ -145,36 +167,13 @@ class CNN():
             TYPE:           Pytorch nn.Module
             DESCRIPTION:    The actual model architecture. Not to be confused with self.model_name which is simply a string identifier. 
             
-            
-            
-            
-        
         Returns
         -------
         None.
 
         """
         
-        # Ensure a directory is selected, otherwise raise an exception 
-        if hasattr(self, 'root_directory') == False:
-            self.select_root_directory()
-            
-        if hasattr(self, 'root_directory') == False:
-            raise Exception("Error: A root directory must be selected")
-            
-        # Set arguments 
-        self.task = task
-        self.number_channels = number_channels
-        self.learning_rate = learning_rate 
-        self.weight_decay = weight_decay 
-        self.num_training_epochs = num_training_epochs 
-        self.transform = None
-        self.batch_size = batch_size
-
         
-        # number_channels must be explicitly set
-        if (hasattr(self, 'number_channels') == False) or (isinstance(number_channels, int) == False):
-            raise Exception("Error: number_channels must be explicitly set to an integer")
         
         # Detect whether Cuda is installed. 
         if torch.cuda.is_available():
@@ -183,19 +182,339 @@ class CNN():
         else:
             self.device = "cpu"
             print('\nRunning on the CPU')
+            
+        # Set class states  
+        self.task = task
+        self.number_channels = number_channels
+        self.learning_rate = learning_rate 
+        self.weight_decay = weight_decay 
+        self.num_training_epochs = num_training_epochs 
+        self.transform = None
+        self.batch_size = batch_size
+        self.labels = pd.DataFrame(columns=['Label', 'Index'])
+
+        print("\nCNN Class Initialization Complete")
+        
+    
+    def select_project(self):
+        """
+        This function prompts the user to select a root directory. 
+        Inside the root dir there must be the following sub-directories: 
+            data
+                data / training 
+                data / predictions 
+            models
+                
+        After selecting the root dir, this function checks that all of the directories 
+        do actually exist, and then checks the integrity of the files in the training directory. 
+
+        Returns
+        -------
+        None.
+
+        """
+        
+        # Have the user select or create a directory for a project. 
+        self.root_directory = filedialog.askdirectory(title='Select folder to save results or create a new sub-directory')
+        
+        # Ensure that the project directory exists.
+        try:
+            os.chdir(self.root_directory)
+        except:
+            try:
+                os.makedirs(self.root_directory)
+            except:
+                raise Exception("Error: A root directory must be selected")
+            
+        # Define the various directory states and ensure they exist. 
+        self.data_directory             = os.path.join(self.root_directory, 'data')
+        self.training_data_directory    = os.path.join(self.root_directory, 'data', 'training')
+        self.predicted_data_directory   = os.path.join(self.root_directory, 'data', 'predictions')
+        self.model_directory            = os.path.join(self.root_directory, 'models')
+        
+        directories = [self.root_directory, self.data_directory, self.training_data_directory, self.predicted_data_directory, self.model_directory]
+        
+        for directory in directories:
+            if os.path.isdir(directory):
+                pass
+            else:
+                os.mkdir(directory)
+                print("")
+                warnings.warn("Error: Directory " + str(directory) + " was not located. Directory was created.")
+                print("")
+            
+        # Verify the integrity of the files in the training data directory, if any files are present.  
+        self.verify_images() 
+        
+        # Load the project data
+        self.load_project_data() 
+        
+        
+    def load_project_data(self):
+        """
+        
+
+        Returns
+        -------
+        None.
+
+        """
+        path = os.path.join(self.root_directory, 'project_data.hdf5')
+        
+        try:
+            f = h5py.File(path,'r') # read-only
+            self.labels = f['Labels'][...]
+            print("Loaded project data.")
+        except: 
+            warnings.warn("Error: Unable to load project file: " + str(path) ) 
+        
+        
+    def save_labels(self):
+        """
+        
+
+        Returns
+        -------
+        None.
+
+        """
+        
+        path = os.path.join(self.root_directory, 'project_data.hdf5')
+        string_dt = h5py.special_dtype(vlen=str)
+        try:
+            f = h5py.File(path,'a') # read-write, create if doesn't already exist. 
+            dset = f.require_dataset(name = 'Labels', 
+                              shape = self.labels.shape, 
+                              dtype = string_dt)
+            
+            dset[0:self.labels.shape[0], 0] = self.labels['Label']
+            dset[:, 1] = np.array( np.arange(0, self.labels.shape[0]), dtype = str)
+            print("Saved updated labels.")
+        except: 
+            warnings.warn("Error: Unable to save labels" ) 
+            
+            
+    def add_class_labels(self): 
+        """
+        This function 
+
+        Returns
+        -------
+        None.
+
+        """
+        
+        while True:
+            print("Current Labels")
+            print("")
+            print(self.labels)
+            print("")
+            new_label = input("Enter the new label. \nLeave empty to stop adding labels.\n")
+            if len(new_label) == 0: 
+                break
+            else:
+                    
+                indices = list(self.labels['Index'])
+                if len(indices) == 0:
+                    new_index = 0
+                else:
+                    new_index = int(np.max( indices )) + 1
+                    
+                temp = pd.Series([new_label, new_index], index = ['Label', 'Index']) 
+                
+                self.labels = pd.concat([self.labels, temp.to_frame().T], axis = 0)
+                self.labels.reset_index(inplace=True, drop = True)
+                
+        self.save_labels()               
+        
+                
+    def remove_class_labels(self): 
+        """
+        This function prompts users to enter an integer corresponding to the labels they wish to remove. 
+
+        Returns
+        -------
+        None.
+
+        """
+        while True:
+            print("Current Labels")
+            print("")
+            print(self.labels)
+            print("")
+            remove_index = input("Enter the INDEX of the label to remove. \nLeave empty to stop removing labels.\n")
+            if len(remove_index) == 0: 
+                break
+            else:
+                remove_index = int(remove_index)
+                # Calculate the dataframe where the index is NOT equal to the input index value. 
+                self.labels = self.labels[self.labels['Index'] != remove_index]
+                
+                # Reset dataframe indices. 
+                self.labels.reset_index(inplace=True, drop = True)
+                    
+        self.save_labels()   
+        
+        
+    def label_data(self): 
+        """
+        This function creates a Plotly GUI through which users can label data. 
+
+        Returns
+        -------
+        None.
+
+        """        
+        
+        
+        
+        
+        
+    
+    def verify_images(self): 
+        """
+        This function iterates though the HDF5 files in the training data directory to collect image metadata and verify that all images can be read to memory. 
+
+        Parameters
+        ----------
+       
+        Returns
+        -------
+        None.
+
+        """
+        
+        
+        #Make sure we have the state var image_data.
+        #If not, try loading the CSV from the local machine.
+        #If the CSV file isn't present, then create an empty dataframe.
+        if hasattr(self, 'image_data'):
+            pass
+        else:
+            try:
+                self.image_data = pd.read_csv(   os.path.join(self.root_directory, 'image_data.csv')   )
+            except:    
+                self.image_data = pd.DataFrame() 
+                
+        # Make a list of all files in the directory. 
+        image_list = os.listdir(  self.training_data_directory  ) 
+
+        # Iterate through all images in the directory. If metadata has already been collected, skip the file. 
+        # Otherwise load the file, then record metadata and save when completed. 
+        for img_path in tqdm(image_list, desc = str(os.path.basename(self.training_data_directory))): 
+            
+            # If images have previously been verified AND the image has been checked, skip the image. 
+            if 'File Path' in list(   self.image_data.columns   ):
+                if os.path.join(self.training_data_directory, img_path) in list(self.image_data['File Path']):
+                    continue  
+            
+            # Otherwise, load to memory. 
+            try:
+                if img_path.endswith(('.hdf5')):
+                    f = h5py.File(img_path,'r+') # read-write 
+                    img = f['Raw Data'][...]
+            
+                # Record metadata in the HDF5 files. 
+                f.attrs['Width (px)'] = img.shape[1]
+                f.attrs['Height (px)'] = img.shape[0]
+                if len(img.shape) == 2:
+                    f.attrs['Number Channels'] = 1
+                else:
+                    f.attrs['Number Channels'] = img.shape[2]
+                
+                # And also in the image_data state. 
+                temp = [] 
+                temp.append(os.path.join(self.training_data_directory, img_path))
+                temp.append(os.path.basename(self.training_data_directory))
+                temp.append(img_path)
+                temp.append(img.shape[1])
+                temp.append(img.shape[0]) 
+                if len(img.shape) == 2:
+                    temp.append(1)
+                else:
+                    pass 
+                    temp.append(img.shape[2])
+                temp.append(None)
+                temp.append(None)
+                
+                temp = pd.Series(temp, index = ['File Path', 'Directory','Image Name', 'Width (px)', 'Height (px)', 'Number Channels', 'Designation', 'Encoded Labels']) 
+                
+                self.image_data = pd.concat([self.image_data, temp.to_frame().T], axis = 0)
+                self.image_data.reset_index(inplace=True, drop = True)
+                    
+            except:
+                warnings.warn("Error: Unable to load and verify file: " + str(img_path) ) 
+        
+        # Save metadata as a CSV file for easier review. 
+        output_path = os.path.join( self.root_directory, 'image_data.csv' )
+        self.image_data.drop_duplicates(inplace=True)
+        self.image_data.to_csv(output_path, index = False)
+        
+    
+    def select_and_load_saved_model(self):
+        """
+        
+
+        Returns
+        -------
+        None.
+
+        """
+        
+        # Ensure a directory is selected, otherwise raise an exception 
+        if hasattr(self, 'root_directory') == False:
+            self.select_project()
+            
+        if hasattr(self, 'root_directory') == False:
+            raise Exception("Error: A root directory must be selected")
+            
+            
+        if 'saved_model' in os.listdir( self.model_directory ):
+            print("\nDetected previously saved model, loading Now.")
+            try:
+                self.load_checkpoint() 
+                #self.model.load_state_dict(self.checkpoint['model_state_dict'])
+                print("\nCompleted Loading Previous Model.")
+            except:
+                print("\nError: Unable to Load Previous Model.")
+                
+                
+        
+    def instantiate_model(self): 
+        """
+        
+
+        Returns
+        -------
+        None.
+
+        """
         
         list_of_models = ["MSU_Net", "ResNet18", "SegNet"]
         
         # If a model path has been provided, load model into memory. 
-        if (model_name is not None):
-            if (model_name in list_of_models): 
-                self.model_name = model_name
-                self.instantiate_model()
-            else:
-                raise Exception("\nError: Model must be specified.")
+        if (self.model_name in list_of_models):
+            print("\nInitializing Model...")
+            if self.model_name == "ResNet18":
+                self.model = ResNet(img_channels = self.number_channels, num_layers = 18, block = BasicBlock ).to(self.device)
+            elif self.model_name == "MSU_Net":
+                self.model = MSU_Net(img_ch=self.number_channels, output_ch=35).to(self.device)
+            elif self.model_name == "SegNet":
+                self.model = SegNet(in_channels=self.number_channels, out_channels=100, features=64)
+            print("\nModel Initialized")
+        else:
+            print("Model not found. Please set self.model to your desired nn.Module class.")
+
+    def set_optimizer_parametersw(self):
+        """
         
-        
-        
+
+        Returns
+        -------
+        None.
+
+        """
+        # Set default optimizer to ADAM
         self.optimizer = optim.Adam(params = self.model.parameters(), 
                                lr = self.learning_rate,
                                weight_decay = self.weight_decay
@@ -210,176 +529,16 @@ class CNN():
             for k, v in state.items():
                 if isinstance(v, torch.Tensor):
                     state[k] = v.to(self.device)
-
+    
         self.gamma = 0.99
         self.scheduler = lr_scheduler.ExponentialLR(self.optimizer, gamma = self.gamma)
         self.loss_function = nn.CrossEntropyLoss(ignore_index=255)  
-        
-        #self.initialize_parameters_for_training_from_scratch()
-        
-        if 'saved_model' in os.listdir( self.model_directory ):
-            print("\nDetected previously saved model, loading Now.")
-            try:
-                self.load_checkpoint() 
-                #self.model.load_state_dict(self.checkpoint['model_state_dict'])
-                print("\nCompleted Loading Previous Model.")
-            except:
-                print("\nError: Unable to Load Previous Model.")
-         
-        print("\nCNN Class Setup Complete")
-        
     
-    def select_root_directory(self):
-        """
-        This function prompts the user to select a root directory. 
-        Inside the root dir there must be the following sub-directories: 
-            raw 
-            masks 
-            validation 
-            predictions 
-                
-        After selecting the root dir, this function checks that all of the directories 
-        do actually exist, and then checks the integrity of the files in the raw, mask, and validation directories. 
-
-        Returns
-        -------
-        None.
-
-        """
-        self.root_directory             = filedialog.askdirectory(title='Select Root Directory') 
-        
-        self.data_directory             = os.path.join(self.root_directory, 'data')
-        self.raw_data_directory         = os.path.join(self.root_directory, 'data', 'raw')
-        self.mask_data_directory        = os.path.join(self.root_directory, 'data', 'masks')
-        self.validation_data_directory  = os.path.join(self.root_directory, 'data', 'validation')
-        self.predicted_data_directory   = os.path.join(self.root_directory, 'data', 'predictions')
-        self.model_directory            = os.path.join(self.root_directory, 'model')
-        
-        directories = [self.root_directory, self.data_directory, self.raw_data_directory, self.mask_data_directory, self.validation_data_directory, self.predicted_data_directory, self.model_directory]
-        
-        for directory in directories:
-            # Verify that the directory exists 
-            if os.path.isdir(directory):
-                pass
-            else:
-                os.mkdir(directory)
-                print("")
-                warnings.warn("Error: Directory " + str(directory) + " was not located. Directory was created.")
-                print("")
-                
-            # Verify the integrity of the files. 
-            self.verify_images(directory) 
-        
-    
-    def verify_images(self, directory): 
-        """
-        
-
-        Parameters
-        ----------
-        directory : TYPE
-            DESCRIPTION.
-
-        Returns
-        -------
-        None.
-
-        """
-        
-        image_list = os.listdir(  directory  ) 
-        file_already_exists = False
-        """
-        Make sure we have the state var image_data.
-        If not, try loading the CSV from the local machine.
-        If the CSV file isn't present, then create an empty dataframe.
-        """
-        """
-        if hasattr(self, 'image_data'):
-            pass
-        else:
-        """
-        
-        try:
-            self.image_data = pd.read_csv(   os.path.join(self.root_directory, 'image_data.csv')   )
-            file_already_exists = True
-        except:    
-            self.image_data = pd.DataFrame() 
-    
-        # Iterate through all images in the directory. If metadata has already been collected, skip the file. 
-        # Otherwise load the file, then record metadata and save when completed. 
-        for img_path in tqdm(image_list, desc = str(os.path.basename(directory))): 
-            temp = [] 
-            
-            if 'File Path' in list(   self.image_data.columns   ):
-                if os.path.join(directory, img_path) in list(self.image_data['File Path']):
-                    continue  
-                
-            # Load to memory. 
-            try:
-                if img_path.endswith(('.png', '.jpg', '.tif', '.tiff')):
-                    img = np.array( cv2.imread( os.path.join(directory, img_path)), dtype = np.uint8 )
-                elif img_path.endswith('.npy'):
-                    img = np.load(os.path.join(directory, img_path))
-            
-                # Record metadata 
-                temp.append(os.path.join(directory, img_path))
-                temp.append(os.path.basename(directory))
-                temp.append(img_path)
-                temp.append(img.shape[1])
-                temp.append(img.shape[0]) 
-                if len(img.shape) == 2:
-                    temp.append(1)
-                else:
-                    pass 
-                    temp.append(img.shape[2])
-                
-                temp = pd.Series(temp, index = ['File Path', 'Directory','Image Name', 'Width (px)', 'Height (px)', 'Number Channels']) 
-                
-                
-                self.image_data = pd.concat([self.image_data, temp.to_frame().T], axis = 0)
-                self.image_data.reset_index(inplace=True, drop = True)
-                    
-            except:
-                pass 
-        
-        
-        if file_already_exists:
-            pass
-        else:
-            self.image_data['Designation'] = None
-            self.image_data['Encoded Labels'] = None 
-            
-        self.image_data.drop_duplicates(inplace=True)
-        output_path = os.path.join( self.root_directory, 'image_data.csv' )
-        self.image_data.to_csv(output_path, index = False)
- 
-    
-        
-    def instantiate_model(self): 
-        """
-        
-
-        Returns
-        -------
-        None.
-
-        """
-        print("\nInitializing Model...")
-        if self.model_name == "ResNet18":
-            self.model = ResNet(img_channels = self.number_channels, num_layers = 18, block = BasicBlock ).to(self.device)
-        elif self.model_name == "MSU_Net":
-            self.model = MSU_Net(img_ch=self.number_channels, output_ch=35).to(self.device)
-        elif self.model_name == "SegNet":
-            self.model = SegNet(in_channels=self.number_channels, out_channels=100, features=64)
-        
-        
-        print("\nModel Initialized")
-
                 
                 
     def predict_local_images(self):
         """
-        This function takes the files in the "raw" data directory and makes predictions. 
+        This function takes the files in the "training" data directory and makes predictions. 
         
 
         Parameters
@@ -540,7 +699,7 @@ class CNN():
 
         """
         
-        X = [os.path.join( self.raw_data_directory, x) for x in os.listdir(self.raw_data_directory)]
+        X = [os.path.join( self.training_data_directory, x) for x in os.listdir(self.training_data_directory)]
         data = Dataset(
             X,
             y=None,
@@ -582,11 +741,11 @@ class CNN():
             # And check that the files have been sufficiently annotated. 
             if self.task == "segmentation":
                 
-                training_X = self.image_data[self.image_data['Directory'] == 'raw']   
+                training_X = self.image_data[self.image_data['Directory'] == 'training']   
                 validation_X = self.image_data[self.image_data['Directory'] == 'validation']   
                 y = self.image_data[self.image_data['Directory'] == 'masks']   
                 
-                #X = [os.path.join( self.raw_data_directory, x) for x in os.listdir(self.raw_data_directory)]
+                #X = [os.path.join( self.training_data_directory, x) for x in os.listdir(self.training_data_directory)]
                 #y = [os.path.join( self.mask_data_directory, x) for x in os.listdir(self.mask_data_directory)]
                 
                 self.X = [] # State variables to make tracking easier. 
@@ -610,7 +769,7 @@ class CNN():
                     
                     if (sufficient_data) & (paired_training_file): 
                         self.y.append( os.path.join( self.mask_data_directory, row['Image Name'])    )
-                        self.X.append( os.path.join( self.raw_data_directory, row['Image Name'])    ) 
+                        self.X.append( os.path.join( self.training_data_directory, row['Image Name'])    ) 
                         
                     elif (sufficient_data) & (paired_validation_file): 
                         self.validation_y.append(   os.path.join( self.mask_data_directory, row['Image Name'])    )
@@ -1468,30 +1627,6 @@ def score(MASK_DATA_DIR, PRED_DATA_DIR):
             
             image_pred = cv2.imread(   os.path.join(PRED_DATA_DIR, image_path)   ) 
             predictions.extend(image_pred[image_mask!=255].flatten()) 
-            
-            
-            
-            """
-            image_ground = cv2.imread(   os.path.join(RAW_DATA_DIR, image_path)   ) 
-            
-            image_pred = cv2.cvtColor(image_pred, cv2.COLOR_BGR2GRAY) 
-            image_mask = cv2.cvtColor(image_mask, cv2.COLOR_BGR2GRAY) 
-            
-            plt.imshow(image_ground)
-            plt.show() 
-            
-            plt.imshow(image_pred, cmap = 'jet', vmin=0, vmax=10)
-            plt.show() 
-            
-            
-            plt.imshow(image_mask, cmap = 'jet', vmin=0, vmax=10)
-            plt.show() 
-            """
-            
-            
-            
-            
-            
             
         except:
             pass 
