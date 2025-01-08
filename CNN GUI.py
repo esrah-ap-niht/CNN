@@ -12,6 +12,7 @@ import plotly.express as px
 import os
 from tkinter import filedialog
 from tkinter import *
+import tkinter as tk
 import gc
 from glob import glob
 from os.path import join
@@ -82,10 +83,10 @@ external_stylesheets = [dbc.themes.BOOTSTRAP]
 app = Dash(__name__, external_stylesheets=external_stylesheets)
 
 # Get user to select folder of images 
-image_path = filedialog.askdirectory()
+#image_path = filedialog.askdirectory()
 
 # Get user to select folder for annotations 
-annotation_path = filedialog.askdirectory()
+#annotation_path = filedialog.askdirectory()
 
 filelist = []
 for ext in ('*.gif', '*.png', '*.jpg'):
@@ -128,6 +129,24 @@ app.layout = html.Div(
             dcc.Tab(label='Setup Project', children = [
                 dbc.Row(
                     [
+                        
+                        dbc.Button(
+                            "Select Working Directory", 
+                            id="select-directory-button", 
+                            outline=False, 
+                            color = 'warning',
+                            style = {
+                                     'margin-bottom': '5px'
+                                     },
+                            ),
+                        
+                        dcc.Markdown( children= str(os.getcwd() ), 
+                                     id = 'working-directory-text',
+                                     style={'backgroundColor': 'green', 
+                                            'text-align':'center',
+                                            'margin-bottom': '5px'},
+                                     ),
+                        
                         dbc.Button(
                             "Load Previous Project", 
                             id="load-previous-project-button", 
@@ -360,6 +379,30 @@ app.layout = html.Div(
     
     ]
 )
+
+
+
+def browse_directory():
+    root = tk.Tk()
+    root.withdraw()  # Hide the main window
+    directory = filedialog.askdirectory()
+    return directory
+
+
+@callback(
+    Output('working-directory-text','children'),
+    Input('select-directory-button', 'n_clicks'),
+    prevent_initial_call=True
+    )
+def change_working_directory( n_clicks ):
+    
+    selected_dir = browse_directory()
+    if selected_dir:
+        #Set directory 
+        os.chdir(working_directory)
+    
+        return working_directory
+
 
 
 @callback(
